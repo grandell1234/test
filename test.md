@@ -43,3 +43,12 @@ build/arch/$(ARCH)/asm/%.o: src/arch/$(ARCH)/asm/%.asm
 	mkdir -p $(shell dirname $@)
 	echo "[ASM] $<"
 	$(CROSS_COMPILE)gcc -c -x assembler-with-cpp -o $@ $<
+
+
+
+ 
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.03s
+arm-linux-gnueabihf-gcc -T config/linker.ld -o build/kernel.bin -ffreestanding -nostdlib  target/arm-oreneta/debug/liboreneta.a -lgcc
+/usr/lib/gcc-cross/arm-linux-gnueabihf/12/../../../../arm-linux-gnueabihf/bin/ld: cannot find target/arm-oreneta/debug/liboreneta.a: No such file or directory
+collect2: error: ld returned 1 exit status
+make: *** [Makefile:28: build/kernel.bin] Error 1
