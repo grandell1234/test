@@ -47,8 +47,27 @@ build/arch/$(ARCH)/asm/%.o: src/arch/$(ARCH)/asm/%.asm
 
 
  
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.03s
-arm-linux-gnueabihf-gcc -T config/linker.ld -o build/kernel.bin -ffreestanding -nostdlib  target/arm-oreneta/debug/liboreneta.a -lgcc
-/usr/lib/gcc-cross/arm-linux-gnueabihf/12/../../../../arm-linux-gnueabihf/bin/ld: cannot find target/arm-oreneta/debug/liboreneta.a: No such file or directory
-collect2: error: ld returned 1 exit status
-make: *** [Makefile:28: build/kernel.bin] Error 1
+///
+
+rustup target add armv7-unknown-linux-gnueabihf
+
+rustbuild:
+    cargo build --target=armv7-unknown-linux-gnueabihf
+
+LIB_PATH := target/armv7-unknown-linux-gnueabihf/$(TARGET)/liboreneta.a
+
+make clean
+make
+
+# Path to compiled Rust library
+LIB_PATH := target/armv7-unknown-linux-gnueabihf/$(TARGET)/liboreneta.a
+
+# Rust build step
+rustbuild:
+	cargo build --target=armv7-unknown-linux-gnueabihf
+
+build/kernel.bin: build rustbuild $(ASM_OBJ_FILES)
+	$(LD) -T $(LDFILE) -o $@ -ffreestanding -nostdlib $(ASM_OBJ_FILES) $(LIB_PATH) -lgcc
+
+
+ls target/armv7-unknown-linux-gnueabihf/debug/
