@@ -13,6 +13,10 @@ LIB_PATH := target/$(ARCH)-oreneta/$(TARGET)/liboreneta.a
 ASM_SRC_FILES := $(wildcard src/arch/$(ARCH)/asm/*.asm)
 ASM_OBJ_FILES := $(patsubst src/arch/$(ARCH)/asm/%.asm, build/arch/$(ARCH)/asm/%.o, $(ASM_SRC_FILES))
 
+# Ensure the build directory exists
+build:
+	mkdir -p build
+
 build/oreneta.iso: build/kernel.bin
 	@mkdir -p build/isofiles/boot/grub
 	@cp build/kernel.bin build/isofiles/boot/
@@ -23,7 +27,8 @@ build/oreneta.iso: build/kernel.bin
 run: build/oreneta.iso
 	qemu-system-arm -M versatilepb -kernel $<
 
-build/kernel.bin: rustbuild $(ASM_OBJ_FILES)
+# Ensure build directory exists before generating kernel.bin
+build/kernel.bin: build rustbuild $(ASM_OBJ_FILES)
 	$(LD) -T $(LDFILE) -o $@ -ffreestanding -nostdlib $(ASM_OBJ_FILES) $(LIB_PATH) -lgcc
 
 rustbuild:
